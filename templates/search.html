@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+<!-- <link rel="stylesheet" href="{% static 'player.css' %}"> -->
+  <h2>Search Results for "{{ keyword }}"</h2>
+
+  <ul>
+    {% for result in results %}
+      <li>
+        Video ID: {{ result.video_id }}
+        <br>
+        Start Time: {{ result.start_time }} seconds
+        <br>
+        End Time: {{ result.end_time }} seconds
+        <br>
+        <a href="javascript:void(0);" onclick="playVideo('{{ result.video_id }}', '{{ result.start_time }}');">Play from this timestamp</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <p id="p_a"></p>
+  <section>
+
+    <div class="container">
+      <div class="video_player">
+        
+        <video id="video_d" preload="metadata" class="main-video" controls>
+          <source id="video_d_1080" size="1080">
+          <track kind="subtitles" srclang="en" label="English" default>
+        </video>
+      </div>
+    </div>
+  </section>
+
+<!-- <script src="{% static 'player.js' %}"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+  <script>
+    function convertTimeToSeconds(timeStr) {
+      let [hours, minutes, secondsMilliseconds] = timeStr.split(':');
+      let [seconds, milliseconds] = secondsMilliseconds.split(',');
+  
+      let totalSeconds = (parseInt(hours, 10) * 3600) +
+                         (parseInt(minutes, 10) * 60) +
+                         parseInt(seconds, 10) +
+                         (parseInt(milliseconds, 10) / 1000);
+  
+      return totalSeconds;
+  }
+    function playVideo(videoID, timestamp) {
+      var video = document.getElementById('video_d');
+      var videoURL =  videoID;
+      var videoSrc = '/media/uploads/master.m3u8';
+      var subtitleSrc = '/media/uploads/master_vtt.m3u8'
+      if (Hls.isSupported()) {
+          var hls = new Hls();
+          hls.loadSource(videoSrc);
+          hls.attachMedia(video);
+          var track = video.addTextTrack('subtitles', 'English', 'en');
+          track.mode = 'hidden';
+          track.src = subtitleSrc;
+      }
+      else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          video.src = videoSrc;
+      }
+      let CurT = convertTimeToSeconds(timestamp);
+      console.log(CurT)
+      video.currentTime = CurT;
+      //video.play();
+    }
+  </script>
+{% endblock %}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+        {% endblock title %}
+    </title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'upload_video' %}">Upload Video</a>
+        <a href="{% url 'search_videos' %}">Search Videos</a>
+    </nav>
+    
+    {% block content %}
+    {% endblock %}
+</body>
+</html>
