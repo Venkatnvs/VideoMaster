@@ -2,72 +2,74 @@
 {% load static %}
 
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-<!-- <link rel="stylesheet" href="{% static 'player.css' %}"> -->
-  <h2>Search Results for "{{ keyword }}"</h2>
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <h2 class="text-center mb-4">Search Videos</h2>
+      <form method="get">
+        <div class="form-group">
+          <label for="searchKeyword">Enter Keyword</label>
+          <input type="text" class="form-control" id="searchKeyword" name="keyword" value={{keyword }}>
+          {% csrf_token %}
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+    </div>
+  </div>
 
-  <ul>
-    {% for result in results %}
-      <li>
-        Video ID: {{ result.video_id }}
-        <br>
-        Start Time: {{ result.start_time }} seconds
-        <br>
-        End Time: {{ result.end_time }} seconds
-        <br>
-        <a href="javascript:void(0);" onclick="playVideo('{{ result.video_id }}', '{{ result.start_time }}');">Play from this timestamp</a>
-      </li>
-    {% endfor %}
-  </ul>
-  <p id="p_a"></p>
-  <section>
-
-    <div class="container">
-      <div class="video_player">
-        
-        <video id="video_d" preload="metadata" class="main-video" controls>
+  {% if results %}
+    <h3 class="mt-4">Search Results for "{{ keyword }} in Video"</h3>
+    <ul>
+      {% for result in results %}
+        <li class="mb-1">
+          TimeLine: {{ result.start_time }} seconds
+          <br>
+          <button class="btn btn-primary btn-sm" onclick="playVideo('{{ result.video_id }}', '{{ result.start_time }}');">Play from this timestamp</button>
+        </li>
+      {% endfor %}
+    </ul>
+    
+    <p id="p_a"></p>
+    <section>
+      <div class="container">
+        <div class="video_player" id="video_player">
+        <video id="video_d" preload="auto" class="main-video" controls>
+    
           <source id="video_d_1080" size="1080">
-          <track kind="subtitles" srclang="en" label="English" default>
         </video>
       </div>
     </div>
   </section>
 
-<!-- <script src="{% static 'player.js' %}"></script> -->
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+  {% endif %}
   <script>
     function convertTimeToSeconds(timeStr) {
       let [hours, minutes, secondsMilliseconds] = timeStr.split(':');
       let [seconds, milliseconds] = secondsMilliseconds.split(',');
   
       let totalSeconds = (parseInt(hours, 10) * 3600) +
-                         (parseInt(minutes, 10) * 60) +
-                         parseInt(seconds, 10) +
-                         (parseInt(milliseconds, 10) / 1000);
+        (parseInt(minutes, 10) * 60) +
+        parseInt(seconds, 10) +
+        (parseInt(milliseconds, 10) / 1000);
   
       return totalSeconds;
-  }
+    }
+
     function playVideo(videoID, timestamp) {
       var video = document.getElementById('video_d');
-      var videoURL =  videoID;
-      var videoSrc = '/media/uploads/master.m3u8';
-      var subtitleSrc = '/media/uploads/master_vtt.m3u8'
-      if (Hls.isSupported()) {
-          var hls = new Hls();
-          hls.loadSource(videoSrc);
-          hls.attachMedia(video);
-          var track = video.addTextTrack('subtitles', 'English', 'en');
-          track.mode = 'hidden';
-          track.src = subtitleSrc;
-      }
-      else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          video.src = videoSrc;
-      }
+      video.src = videoID;
       let CurT = convertTimeToSeconds(timestamp);
-      console.log(CurT)
       video.currentTime = CurT;
-      //video.play();
+    
+      var videoPlayerElement = document.getElementById('video_player');
+    
+      if (videoPlayerElement.getBoundingClientRect().top < window.innerHeight) {
+        video.play();
+      } else {
+        video.onloadeddata = function() {
+          video.play();
+        }
+        videoPlayerElement.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   </script>
 {% endblock %}

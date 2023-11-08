@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from .forms import VideoUploadForm
-from .tasks2 import process_video
+from .tasks import process_video
 from .models import Subtitles,VideoUpload
 from django.http import HttpResponse
 
@@ -13,18 +13,18 @@ def upload_video(request):
         form = VideoUploadForm(request.POST, request.FILES)
         if form.is_valid():
             video = form.save()
-            a = process_video(video.id)
+            process_video.delay(video.id)
             return redirect('video_list')
     else:
         form = VideoUploadForm()
     return render(request, 'upload.html', {'form': form})
 
-def search_videos(request):
+def search_videos(request,video_id):
     keyword = request.GET.get('keyword')
     results = []
-
+    context = None
     if keyword:
-        subtitles = Subtitles.objects.filter(subtitle_text__icontains=keyword)
+        subtitles = Subtitles.objects.filter(subtitle_text__icontains=keyword,video__uuid=video_id)
 
         for subtitle in subtitles:
             results.append({
@@ -32,8 +32,9 @@ def search_videos(request):
                 'start_time': subtitle.start_time,
                 'end_time': subtitle.end_time
             })
+        context = {'results': results, 'keyword': keyword}
 
-    return render(request, 'search.html', {'results': results, 'keyword': keyword})
+    return render(request, 'search.html',context)
 
 
 def play_video(request, video_id):

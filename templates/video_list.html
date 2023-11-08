@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Video List</h2>
-
-  <ul>
-    {% for video in videos %}
-      <li>
-        Title: {{ video.title }}
-        <br>
-        <a href="{% url 'play_video' video.uuid %}">Play Video</a>
-      </li>
-    {% endfor %}
-  </ul>
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <h2 class="text-center mb-4">Video List</h2>
+      <ul class="list-group">
+        {% for video in videos %}
+          <li class="list-group-item">
+            <h4 class="mb-0">{{ video.title }}</h4>
+            <a href="{% url 'search_videos' video.uuid %}" class="btn btn-primary mt-2">Search in Video</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
 {% endblock %}
+
