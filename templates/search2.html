@@ -21,9 +21,9 @@
     <ul>
       {% for result in results %}
         <li class="mb-3">
-          <span class="mb-1">TimeLine <span class="badge bg-success fw-bold">{{ result.start_time }} seconds</span>: </span>
+          <span class="mb-1">TimeLine <span class="badge bg-success fw-bold">{{ results.0.Timestamp.S }} seconds</span>: </span>
           <!-- <br> -->
-          <button class="btn btn-primary btn-sm mx-2" onclick="playVideo('{{ result.video_id }}', '{{ result.start_time }}');">Play this timestamp</button>
+          <button class="btn btn-primary btn-sm mx-2" onclick="playVideo('{{ results.0.VideoId.S }}', '{{ results.0.Timestamp.S }}');">Play this timestamp</button>
         </li>
       {% endfor %}
     </ul>
