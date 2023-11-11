@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,HttpResponse
 from .forms import VideoUploadForm
 from .tasks import process_video
 from .models import VideoUpload
@@ -7,19 +7,21 @@ from django.core.files.storage import FileSystemStorage
 import boto3
 
 def video_list(request):
-    videos = VideoUpload.objects.filter(is_active=True)
+    videos = VideoUpload.objects.all()
     return render(request, 'video_list.html', {'videos': videos})
 
 def upload_video(request):
     if request.method == 'POST':
         form = VideoUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            video = form.save()
+            video = form.save(commit=False)
+            video.is_active = False
+            video.save()
             video_file = request.FILES['file']
             fs = FileSystemStorage()
             filename = fs.save(f'uploads/video_{video.uuid}.mp4', video_file)
-            process_video.delay(video.uuid)
             messages.info(request,"The video is processing")
+            # process_video.delay(video.uuid)
             return redirect('video_list')
     else:
         form = VideoUploadForm()
@@ -28,6 +30,8 @@ def upload_video(request):
 def search_videos(request, video_id):
     keyword = request.GET.get('keyword')
     video_file = VideoUpload.objects.filter(uuid=video_id).first()
+    if not video_file.is_active:
+        return HttpResponse("Video is been processing")
     results = []
     context = {"title":video_file.title}
 
