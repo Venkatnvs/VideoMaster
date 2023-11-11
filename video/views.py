@@ -21,7 +21,7 @@ def upload_video(request):
             fs = FileSystemStorage()
             filename = fs.save(f'uploads/video_{video.uuid}.mp4', video_file)
             messages.info(request,"The video is processing")
-            # process_video.delay(video.uuid)
+            process_video.delay(video.uuid)
             return redirect('video_list')
     else:
         form = VideoUploadForm()
