@@ -1,0 +1,30 @@
+services:
+  - type: worker
+    name: queue
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "celery --app tasks worker --loglevel info --concurrency 4"
+    autoDeploy: false
+    envVars:
+      - key: CELERY_BROKER_URL
+        fromService:
+          name: celery-redis
+          type: redis
+          property: connectionString
+  - type: web
+    name: app
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn VideoMaster.wsgi:application"
+    autoDeploy: false
+    envVars:
+      - key: CELERY_BROKER_URL
+        fromService:
+          name: celery-redis
+          type: redis
+          property: connectionString
+  - type: redis
+    name: celery-redis
+    plan: starter
+    maxmemoryPolicy: noeviction 
+    ipAllowList: []
