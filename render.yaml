@@ -3,7 +3,7 @@ services:
     name: queue
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "celery --app tasks worker --loglevel info --concurrency 4"
+    startCommand: "apt-get update && apt-get install -y ccextractor && celery --app tasks worker --loglevel info --concurrency 4"
     autoDeploy: false
     envVars:
       - key: CELERY_BROKER_URL
