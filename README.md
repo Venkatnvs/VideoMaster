@@ -1,6 +1,10 @@
 # VideoMaster
 This project is a web application designed for the efficient search and processing of videos based on their subtitles. Users can upload videos, and the system automatically extracts subtitles using the ccextractor binary. The extracted subtitles are stored in Amazon DynamoDB, and the videos are stored in Amazon S3.
 
+[![Watch the video](https://img.youtube.com/vi/qnaLAG2u7nE/hqdefault.jpg)](https://www.youtube.com/embed/qnaLAG2u7nE)
+<br/>
+[Watch now](https://youtu.be/qnaLAG2u7nE)
+
 # Video Search and Processing Project
 
 This project is a web application designed for efficient video search and processing based on subtitles. Users can upload videos, and the system automatically extracts subtitles using the ccextractor binary. The extracted subtitles are stored in Amazon DynamoDB, and the videos are stored in Amazon S3.
